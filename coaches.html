@@ -7,7 +7,7 @@
 <meta name="description" content="Eight coaches at A2PRO in Willemstad: squad, technique, fitness, juniors and beginners.">
 <meta name="theme-color" content="#0A1622">
 <link rel="canonical" href="https://a3dprintingcw-cyber.github.io/a2pro/coaches.html">
-<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/favicon.png" type="image/png" sizes="256x256">
 <link rel="apple-touch-icon" href="assets/icon-180.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta property="og:type" content="website">
@@ -23,17 +23,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="assets/styles.css?v=6">
+<link rel="stylesheet" href="assets/styles.css?v=2">
 </head>
 <body>
 <header class="topbar">
     <div class="wrap topbar-in">
-      <a class="brand" href="index.html"><svg class="court-glyph" viewBox="0 0 200 100" aria-hidden="true">
-        <rect x="2" y="2" width="196" height="96" fill="none" stroke="#FF6B4A" stroke-width="5"/>
-        <line x1="100" y1="2" x2="100" y2="98" stroke="#FF6B4A" stroke-width="5"/>
-        <line x1="40" y1="2" x2="40" y2="98" stroke="#FF6B4A" stroke-width="4"/>
-        <line x1="160" y1="2" x2="160" y2="98" stroke="#FF6B4A" stroke-width="4"/>
-      </svg><span><span class="r2">A2</span>PRO</span></a>
+      <a class="brand" href="index.html"><img class="logo" src="assets/logo.png" srcset="assets/logo.png 1x, assets/logo@2x.png 2x" alt="A2PRO" width="160" height="39" decoding="async"></a>
       <nav class="topnav" id="topnav">
         <a href="programs.html">Programs</a>
         <a href="coaches.html" class="here">Coaches</a>
@@ -73,7 +68,7 @@
   </section>
 <footer>
     <div class="wrap foot-in">
-      <a class="brand" href="index.html" style="font-size:16px"><span class="r2">A2</span>PRO</a>
+      <a class="brand" href="index.html"><img class="logo sm" src="assets/logo.png" srcset="assets/logo.png 1x, assets/logo@2x.png 2x" alt="A2PRO" width="120" height="29" decoding="async" loading="lazy"></a>
       <nav class="foot-nav">
         <a href="programs.html">Programs</a>
         <a href="coaches.html">Coaches</a>
@@ -84,8 +79,8 @@
     </div>
   </footer>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
-  <script src="assets/data.js?v=6"></script>
-  <script src="assets/site.js?v=6"></script>
+  <script src="assets/data.js?v=2"></script>
+  <script src="assets/site.js?v=2"></script>
   <script>
     document.getElementById("coachGrid").innerHTML =
       window.R2.COACHES.map(function(c,i){ return window.coachCard(c,i); }).join("");

@@ -1,11 +1,11 @@
 /* A2PRO service worker. App shell cached so the courtside wifi stops mattering. */
-var CACHE = "a2pro-v1";
+var CACHE = "a2pro-v2";
 var SHELL = [
   "./", "index.html", "app.html", "academies.html", "programs.html",
   "coaches.html", "pricing.html", "404.html", "manifest.webmanifest",
-  "assets/styles.css?v=6", "assets/data.js?v=6", "assets/store.js?v=6", "assets/i18n.js?v=6",
-  "assets/qr.js?v=6", "assets/scan.js?v=6", "assets/site.js?v=6", "assets/figure.js?v=6", "assets/app.js?v=6",
-  "assets/icon.svg", "assets/icon-192.png", "assets/icon-512.png"
+  "assets/styles.css?v=2", "assets/data.js?v=2", "assets/store.js?v=2", "assets/i18n.js?v=2",
+  "assets/qr.js?v=2", "assets/scan.js?v=2", "assets/site.js?v=2", "assets/figure.js?v=2", "assets/app.js?v=2",
+  "assets/logo.png", "assets/favicon.png", "assets/icon-192.png", "assets/icon-512.png"
 ];
 
 self.addEventListener("install", function(e){
