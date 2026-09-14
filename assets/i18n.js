@@ -214,7 +214,24 @@ window.r2i18n = (function(){
     "t.sheetSaved": {en:"sheet saved",    pap:"formulario wardá",  nl:"sheet opgeslagen", es:"ficha guardada"},
     "s.titleCoach": {en:"Sessions",       pap:"Sesionnan",        nl:"Trainingen",     es:"Sesiones"},
     "s.subCoach":   {en:"Your sessions at Padelx. Tap one to check the squad in.", pap:"Bo sesionnan na Padelx. Primi un pa check in e skuadra.", nl:"Je trainingen bij Padelx. Tik er een aan om in te checken.", es:"Tus sesiones en Padelx. Toca una para pasar lista."},
-    "s.booked":     {en:"booked",         pap:"reservá",          nl:"geboekt",        es:"reservado"}
+    "s.booked":     {en:"booked",         pap:"reservá",          nl:"geboekt",        es:"reservado"},
+    "s.new":        {en:"New session",    pap:"Sesion nobo",      nl:"Nieuwe training",es:"Nueva sesion"},
+    "s.newSub":     {en:"Add a squad block, a private or a camp day", pap:"Añadí un blòki, un privá òf un dia di kamp", nl:"Voeg een blok, prive of kampdag toe", es:"Añade un bloque, una privada o un dia de camp"},
+    "s.edit":       {en:"Edit",           pap:"Editá",            nl:"Bewerken",       es:"Editar"},
+    "s.kind":       {en:"Session",        pap:"Sesion",           nl:"Soort",          es:"Sesion"},
+    "s.kindDefault":{en:"Training",       pap:"Entreno",          nl:"Training",       es:"Entreno"},
+    "s.date":       {en:"Date",           pap:"Fecha",            nl:"Datum",          es:"Fecha"},
+    "s.time":       {en:"Time",           pap:"Ora",              nl:"Tijd",           es:"Hora"},
+    "s.len":        {en:"Minutes",        pap:"Minüt",            nl:"Minuten",        es:"Minutos"},
+    "s.cap":        {en:"Places",         pap:"Lugá",             nl:"Plekken",        es:"Plazas"},
+    "s.court":      {en:"Court",          pap:"Kancha",           nl:"Baan",           es:"Pista"},
+    "s.pts":        {en:"Points",         pap:"Puntonan",         nl:"Punten",         es:"Puntos"},
+    "s.note":       {en:"Note",           pap:"Remarke",          nl:"Notitie",        es:"Nota"},
+    "s.notePh":     {en:"What to bring, what you are working on", pap:"Kiko trese, riba kiko boso ta traha", nl:"Wat mee te nemen, waar je aan werkt", es:"Que traer, en que trabajais"},
+    "s.saved":      {en:"saved",          pap:"wardá",            nl:"opgeslagen",     es:"guardada"},
+    "s.added":      {en:"added",          pap:"añadí",            nl:"toegevoegd",     es:"añadida"},
+    "s.cancelSess": {en:"Cancel this session", pap:"Kansela e sesion aki", nl:"Deze training annuleren", es:"Cancelar esta sesion"},
+    "s.cancelled":  {en:"Session cancelled", pap:"Sesion kanselá", nl:"Training geannuleerd", es:"Sesion cancelada"}
   };
 
   var lang = "en";

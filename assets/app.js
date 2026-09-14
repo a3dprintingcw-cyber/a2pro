@@ -46,6 +46,33 @@
     return false;
   }
 
+  /* The generated sample plan, plus whatever the coach has changed. Everything in
+     the app reads sessions() rather than D.SCHEDULE so an edit shows up everywhere. */
+  function sessions(){
+    var ov = S.sessions();
+    var out = D.SCHEDULE
+      .filter(function(x){ return ov.removed.indexOf(x.id) === -1; })
+      .map(function(x){
+        var p = ov.edits[x.id];
+        if(!p) return x;
+        var m = Object.assign({}, x, p);
+        m.date = new Date(p.date != null ? p.date : x.date);
+        m.end  = new Date(m.date.getTime() + (m.dur || 90) * 60000);
+        return m;
+      });
+    ov.added.forEach(function(a){
+      var m = Object.assign({}, a);
+      m.date = new Date(a.date);
+      m.end  = new Date(m.date.getTime() + (a.dur || 90) * 60000);
+      out.push(m);
+    });
+    return out.sort(function(a,b){ return a.date - b.date; });
+  }
+
+  function sessionById(id){
+    return sessions().filter(function(x){ return x.id === id; })[0] || null;
+  }
+
   /* ---------------------------------------------------------------- navigation */
 
   var ICON = {
@@ -255,7 +282,7 @@
   }
 
   function renderDash(){
-    var next = D.SCHEDULE[0];
+    var next = sessions()[0];
     var rs = next ? S.rsvp(next.id) : null;
     $("#nextWrap").innerHTML = next ?
       '<div><div class="eyebrow">'+t("d.next")+'</div>'+
@@ -282,7 +309,7 @@
   function renderNba(){
     var el = $("#nba");
     if(!el) return;
-    var next = D.SCHEDULE[0];
+    var next = sessions()[0];
     var cheapest = D.SHOP.reduce(function(a,b){ return b.c < a.c ? b : a; }, D.SHOP[0]);
     var pick;
 
@@ -353,7 +380,7 @@
     /* A coach does not RSVP to his own sessions. He wants to know who is coming
        and to get into the check-in for that session in one tap. */
     if(role === "coach"){
-      $("#schedList").innerHTML = D.SCHEDULE.map(function(s){
+      $("#schedList").innerHTML = sessions().map(function(s){
         var checked = Object.keys(S.checks(s.id)).length;
         var full = s.taken >= s.cap;
         return '<article class="sess">'+
@@ -369,13 +396,18 @@
           '</div>'+
           '<div class="sess-act">'+
             '<button class="btn btn-primary btn-sm" data-checkin="'+s.id+'">'+t("t.startCheck")+'</button>'+
+            '<button class="btn btn-ghost btn-sm" data-editsess="'+s.id+'">'+t("s.edit")+'</button>'+
             '<button class="link-btn" data-ics="'+s.id+'">'+t("s.cal")+'</button>'+
           '</div></article>';
-      }).join("");
+      }).join("") +
+      '<button class="upload" id="newSession">'+
+        '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>'+
+        '<span class="ul-t">'+t("s.new")+'</span>'+
+        '<span class="ul-s">'+t("s.newSub")+'</span></button>';
       return;
     }
 
-    $("#schedList").innerHTML = D.SCHEDULE.map(function(s){
+    $("#schedList").innerHTML = sessions().map(function(s){
       var rs = S.rsvp(s.id);
       var left = Math.max(0, s.cap - s.taken - (rs === "in" ? 1 : 0));
       var full = left === 0 && rs !== "in";
@@ -396,6 +428,100 @@
     }).join("");
   }
 
+  /* ---- the session editor ---- */
+
+  function pad2(n){ return (n<10?"0":"") + n; }
+  function dateValue(d){ return d.getFullYear()+"-"+pad2(d.getMonth()+1)+"-"+pad2(d.getDate()); }
+  function timeValue(d){ return pad2(d.getHours())+":"+pad2(d.getMinutes()); }
+
+  function openSession(id){
+    var s0 = id ? sessionById(id) : null;
+    var when = s0 ? new Date(s0.date) : (function(){
+      var d = new Date(); d.setDate(d.getDate()+1); d.setHours(17,0,0,0); return d;
+    })();
+    var dur = s0 ? Math.round((s0.end - s0.date)/60000) : 90;
+
+    modal(
+      '<div class="sessform" data-sid="'+(id || "")+'">'+
+        '<h3>'+t(id ? "s.edit" : "s.new")+'</h3>'+
+        '<label class="field"><span>'+t("s.kind")+'</span>'+
+          '<input type="text" id="sfKind" value="'+esc(s0 ? s0.kind : "")+'" placeholder="Squad training"></label>'+
+        '<div class="field-row">'+
+          '<label class="field"><span>'+t("s.date")+'</span><input type="date" id="sfDate" value="'+dateValue(when)+'"></label>'+
+          '<label class="field"><span>'+t("s.time")+'</span><input type="time" id="sfTime" value="'+timeValue(when)+'"></label>'+
+        '</div>'+
+        '<div class="field-row">'+
+          '<label class="field"><span>'+t("s.len")+'</span><input type="number" id="sfDur" min="15" max="360" step="15" value="'+dur+'"></label>'+
+          '<label class="field"><span>'+t("s.cap")+'</span><input type="number" id="sfCap" min="1" max="60" value="'+(s0 ? s0.cap : 8)+'"></label>'+
+        '</div>'+
+        '<label class="field"><span>'+t("s.court")+'</span>'+
+          '<input type="text" id="sfCourt" value="'+esc(s0 ? s0.court : "Court 1, Padelx")+'"></label>'+
+        '<div class="field-row">'+
+          '<label class="field"><span>'+t("s.pts")+'</span><input type="number" id="sfPts" min="0" max="500" step="5" value="'+(s0 ? s0.pts : 60)+'"></label>'+
+          '<label class="field"><span>'+t("s.booked")+'</span><input type="number" id="sfTaken" min="0" max="60" value="'+(s0 ? s0.taken : 0)+'"></label>'+
+        '</div>'+
+        '<label class="field"><span>'+t("s.note")+'</span>'+
+          '<input type="text" id="sfNote" value="'+esc(s0 ? s0.note : "")+'" placeholder="'+t("s.notePh")+'"></label>'+
+        '<button class="btn btn-primary" id="sfSave">'+t("c.save")+'</button>'+
+        (id ? '<button class="link-btn danger" id="sfDelete">'+t("s.cancelSess")+'</button>' : '')+
+      '</div>');
+  }
+
+  document.addEventListener("click", function(e){
+    if(e.target.closest("#newSession")){ openSession(null); return; }
+    var ed = e.target.closest("[data-editsess]");
+    if(ed){ openSession(ed.dataset.editsess); return; }
+
+    if(e.target.closest("#sfSave")){
+      var wrap = $(".sessform"), id = wrap.dataset.sid;
+      var kind = $("#sfKind").value.trim() || t("s.kindDefault");
+      var parts = $("#sfDate").value.split("-"), hm = $("#sfTime").value.split(":");
+      if(parts.length !== 3 || hm.length < 2){ $("#sfDate").focus(); return; }
+      var when = new Date(+parts[0], +parts[1]-1, +parts[2], +hm[0], +hm[1], 0, 0);
+      var patch = {
+        kind: kind,
+        date: when.getTime(),
+        dur:  Math.max(15, parseInt($("#sfDur").value, 10) || 90),
+        cap:  Math.max(1,  parseInt($("#sfCap").value, 10) || 8),
+        taken:Math.max(0,  parseInt($("#sfTaken").value, 10) || 0),
+        pts:  Math.max(0,  parseInt($("#sfPts").value, 10) || 0),
+        court:$("#sfCourt").value.trim(),
+        note: $("#sfNote").value.trim(),
+        coach:"MJ"
+      };
+      if(id) S.editSession(id, patch);
+      else {
+        patch.id = "own" + Date.now();
+        S.addSession(patch);
+      }
+      haptic(18);
+      closeModal();
+      renderSchedule(); renderStaff(); renderToday(); renderDash();
+      window.r2toast(kind + " · " + t(id ? "s.saved" : "s.added"));
+      return;
+    }
+
+    if(e.target.closest("#sfDelete")){
+      var w2 = $(".sessform");
+      if(!w2) return;
+      var sid = w2.dataset.sid, was = sessionById(sid);
+      S.removeSession(sid);
+      closeModal();
+      if(checkSession === sid){
+        var first = sessions()[0];
+        checkSession = first ? first.id : checkSession;
+      }
+      renderSchedule(); renderStaff(); renderToday(); renderDash();
+      window.r2toast(t("s.cancelled"), t("c.undo"), function(){
+        if(was) S.addSession({id:was.id, kind:was.kind, date:was.date.getTime(),
+          dur:Math.round((was.end-was.date)/60000), cap:was.cap, taken:was.taken,
+          pts:was.pts, court:was.court, note:was.note, coach:was.coach});
+        renderSchedule(); renderStaff(); renderToday(); renderDash();
+      });
+      return;
+    }
+  });
+
   /* jump straight from a session into its check-in list */
   document.addEventListener("click", function(e){
     var c = e.target.closest("[data-checkin]");
@@ -413,7 +539,7 @@
       var sid = r.dataset.sid, val = r.dataset.rsvp, was = S.rsvp(sid);
       S.setRsvp(sid, was === val ? null : val);
       renderSchedule(); renderDash();
-      var sess = D.SCHEDULE.filter(function(s){ return s.id === sid; })[0];
+      var sess = sessionById(sid);
       if(val === "in" && was !== "in")
         window.r2toast(t("s.going") + " · " + fmtDay(sess.date) + " " + fmtTime(sess.date));
       if(val === "out" && was !== "out")
@@ -422,7 +548,7 @@
     }
     var c = e.target.closest("[data-ics]");
     if(c){
-      var s2 = D.SCHEDULE.filter(function(x){ return x.id === c.dataset.ics; })[0];
+      var s2 = sessionById(c.dataset.ics);
       if(s2) ics(s2);
     }
   });
@@ -709,7 +835,7 @@
 
   function renderToday(){
     if(!$("#v-today")) return;
-    var next = D.SCHEDULE[0];
+    var next = sessions()[0];
     var checks = next ? S.checks(next.id) : {};
     var inCount = Object.keys(checks).length;
     var waiting = liveCodes().length;
@@ -851,7 +977,7 @@
 
   /* ---------------------------------------------------------------- coach tools */
 
-  var checkSession = D.SCHEDULE[0] ? D.SCHEDULE[0].id : "s0";
+  var checkSession = sessions()[0] ? sessions()[0].id : "s0";
   var rosterQuery = "";
   var lastChecks = null;   /* one level of undo, because fat fingers on a wet phone */
 
@@ -861,11 +987,19 @@
 
   function renderStaff(){
     var sel = $("#checkSession");
-    if(sel && !sel.options.length){
-      sel.innerHTML = D.SCHEDULE.map(function(x){
-        return '<option value="'+x.id+'">'+esc(sessionLabel(x))+'</option>';
-      }).join("");
-      sel.value = checkSession;
+    if(sel){
+      var list = sessions();
+      var want = list.some(function(x){ return x.id === checkSession; }) ? checkSession
+               : (list[0] ? list[0].id : checkSession);
+      var sig = list.map(function(x){ return x.id + sessionLabel(x); }).join("|");
+      if(sel.dataset.sig !== sig){
+        sel.innerHTML = list.map(function(x){
+          return '<option value="'+x.id+'">'+esc(sessionLabel(x))+'</option>';
+        }).join("");
+        sel.dataset.sig = sig;
+      }
+      checkSession = want;
+      sel.value = want;
     }
 
     var checks = S.checks(checkSession);

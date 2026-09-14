@@ -832,3 +832,11 @@ button.avatar{border:0;cursor:pointer}
 /* the dialog needs room for a whole assessment sheet */
 .modal .sheet:has(.pdetail){max-width:520px;max-height:88vh;overflow-y:auto}
 @media (max-width:680px){ .modal .sheet:has(.pdetail){max-height:92vh} }
+
+/* ---------- session editor ---------- */
+.sessform h3{font-family:var(--f-display);font-size:22px;text-transform:uppercase;margin-bottom:18px}
+.sessform .btn{width:100%;margin-top:6px}
+.link-btn.danger{display:block;width:100%;margin-top:14px;text-align:center;color:#FF5A5A}
+.link-btn.danger:hover{color:#ff8080}
+.modal .sheet:has(.sessform){max-width:440px;max-height:88vh;overflow-y:auto}
+.sess-act .btn{white-space:nowrap}

@@ -25,6 +25,7 @@ window.r2store = (function(){
     checkins:    {},          /* sessionId: {playerId: true}, coach view */
     assess:      {},          /* playerId: {skill name: score} set by the coach */
     notes:       {},          /* playerId: [{t, at}] coach notes */
+    sessions:    null,        /* {edits:{id:patch}, added:[session], removed:[id]} */
     skillEdits:  {},          /* legacy, migrated into assess on first read */
     weekDrills:  0
   };
@@ -139,6 +140,36 @@ window.r2store = (function(){
       if(!c.assess[playerId]) c.assess[playerId] = {};
       return c.assess[playerId];
     },
+    /* The sample schedule is generated fresh each load, so coach changes are kept as
+       an overlay on top of it rather than as a copy: a patch per edited session, a
+       list of ones he added, and the ids he cancelled. */
+    sessions: function(){
+      var c = club();
+      if(!c.sessions) c.sessions = {edits:{}, added:[], removed:[]};
+      if(!c.sessions.edits) c.sessions.edits = {};
+      if(!c.sessions.added) c.sessions.added = [];
+      if(!c.sessions.removed) c.sessions.removed = [];
+      return c.sessions;
+    },
+    editSession: function(id, patch){
+      var ss = this.sessions();
+      var own = ss.added.filter(function(x){ return x.id === id; })[0];
+      if(own) Object.assign(own, patch);
+      else ss.edits[id] = Object.assign(ss.edits[id] || {}, patch);
+      save();
+    },
+    addSession: function(sess){
+      this.sessions().added.push(sess);
+      save();
+    },
+    removeSession: function(id){
+      var ss = this.sessions();
+      ss.added = ss.added.filter(function(x){ return x.id !== id; });
+      if(ss.removed.indexOf(id) === -1) ss.removed.push(id);
+      delete ss.edits[id];
+      save();
+    },
+
     setSkill: function(playerId, name, value){
       this.assess(playerId)[name] = value;
       save();
