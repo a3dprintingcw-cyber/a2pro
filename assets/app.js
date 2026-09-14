@@ -346,6 +346,35 @@
   }
 
   function renderSchedule(){
+    var head = $("#schedTitle"), sub = $("#schedSub");
+    if(head) head.textContent = t(role === "coach" ? "s.titleCoach" : "s.title");
+    if(sub)  sub.textContent  = t(role === "coach" ? "s.subCoach"   : "s.sub");
+
+    /* A coach does not RSVP to his own sessions. He wants to know who is coming
+       and to get into the check-in for that session in one tap. */
+    if(role === "coach"){
+      $("#schedList").innerHTML = D.SCHEDULE.map(function(s){
+        var checked = Object.keys(S.checks(s.id)).length;
+        var full = s.taken >= s.cap;
+        return '<article class="sess">'+
+          '<div class="sess-when"><b>'+fmtDay(s.date)+'</b><span>'+fmtTime(s.date)+'</span></div>'+
+          '<div class="sess-body">'+
+            '<h4>'+esc(s.kind)+'</h4>'+
+            '<div class="sess-meta">'+esc(s.court)+'</div>'+
+            '<p>'+esc(s.note)+'</p>'+
+            '<div class="chips">'+
+              '<span class="chip'+(checked?" sea":"")+'">'+checked+' '+t("t.checkedIn")+'</span>'+
+              '<span class="chip'+(full?"":" ochre")+'">'+s.taken+'/'+s.cap+' '+t("s.booked")+'</span>'+
+            '</div>'+
+          '</div>'+
+          '<div class="sess-act">'+
+            '<button class="btn btn-primary btn-sm" data-checkin="'+s.id+'">'+t("t.startCheck")+'</button>'+
+            '<button class="link-btn" data-ics="'+s.id+'">'+t("s.cal")+'</button>'+
+          '</div></article>';
+      }).join("");
+      return;
+    }
+
     $("#schedList").innerHTML = D.SCHEDULE.map(function(s){
       var rs = S.rsvp(s.id);
       var left = Math.max(0, s.cap - s.taken - (rs === "in" ? 1 : 0));
@@ -366,6 +395,17 @@
         '</div></article>';
     }).join("");
   }
+
+  /* jump straight from a session into its check-in list */
+  document.addEventListener("click", function(e){
+    var c = e.target.closest("[data-checkin]");
+    if(!c) return;
+    checkSession = c.dataset.checkin;
+    var sel = $("#checkSession");
+    if(sel) sel.value = checkSession;
+    renderStaff();
+    show("check", true);
+  });
 
   document.addEventListener("click", function(e){
     var r = e.target.closest("[data-rsvp]");

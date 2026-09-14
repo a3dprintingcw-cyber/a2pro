@@ -211,7 +211,10 @@ window.r2i18n = (function(){
     "t.note":       {en:"Coach note",     pap:"Remarke di coach", nl:"Coachnotitie",   es:"Nota del coach"},
     "t.notePh":     {en:"What to work on next block", pap:"Kiko pa traha riba proximo blòki", nl:"Waar de volgende blok aan te werken", es:"En que trabajar el proximo bloque"},
     "t.saveSheet":  {en:"Save the sheet", pap:"Warda e formulario", nl:"Sheet opslaan", es:"Guardar ficha"},
-    "t.sheetSaved": {en:"sheet saved",    pap:"formulario wardá",  nl:"sheet opgeslagen", es:"ficha guardada"}
+    "t.sheetSaved": {en:"sheet saved",    pap:"formulario wardá",  nl:"sheet opgeslagen", es:"ficha guardada"},
+    "s.titleCoach": {en:"Sessions",       pap:"Sesionnan",        nl:"Trainingen",     es:"Sesiones"},
+    "s.subCoach":   {en:"Your sessions at Padelx. Tap one to check the squad in.", pap:"Bo sesionnan na Padelx. Primi un pa check in e skuadra.", nl:"Je trainingen bij Padelx. Tik er een aan om in te checken.", es:"Tus sesiones en Padelx. Toca una para pasar lista."},
+    "s.booked":     {en:"booked",         pap:"reservá",          nl:"geboekt",        es:"reservado"}
   };
 
   var lang = "en";
