@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+Disallow: /app.html
+Sitemap: https://a3dprintingcw-cyber.github.io/a2pro/sitemap.xml
