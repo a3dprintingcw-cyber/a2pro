@@ -7,31 +7,27 @@ window.R2 = (function(){
     email:    "asccur@gmail.com",
     squad:    "Squad A",
     days:     "Tuesday & Thursday",
-    coach:    "Coach Rafa",
+    coach:    "MJ",
     first:    "Adrian"
   };
 
+  /* MJ takes every class at the moment. Add coaches here as A2PRO grows. */
   var COACHES = [
-    {i:"RM", n:"Rafa Montoya",    r:"Head coach",         b:"Former WPT qualifier, 12 years coaching. Runs the squad programme and the level assessments.", t:["Squad","Tactics","Video review"], l:"ES · EN · PAP"},
-    {i:"YP", n:"Yaritza Pieters", r:"Fitness & kids",     b:"Sports scientist. Builds the conditioning blocks and leads the Kids Academy mornings.", t:["Kids 5-12","Fitness"], l:"PAP · NL · EN"},
-    {i:"DB", n:"Dennis Bermúdez", r:"Performance coach",  b:"Works with the competitive players on match play, serve patterns and pressure drills.", t:["Advanced","Match play"], l:"ES · EN"},
-    {i:"LC", n:"Lisandra Cova",   r:"Technical coach",    b:"Specialist in wall play and defensive shots. Most of the home drills on wall control are hers.", t:["Technique","Wall play"], l:"ES · PAP · EN"},
-    {i:"KM", n:"Kevin Martina",   r:"Junior coach",       b:"Runs the Tuesday and Thursday junior groups and the school holiday camps.", t:["Juniors","Camps"], l:"PAP · NL · EN"},
-    {i:"AF", n:"Ana Ferreira",    r:"Beginner programme", b:"Takes new players from first session to first match. Patient, structured, very popular.", t:["Beginners","Adults"], l:"PT · ES · EN"},
-    {i:"JV", n:"Jordi Valdés",    r:"Assistant coach",    b:"Feeds the drills, films the video reviews and keeps the ball machines honest.", t:["Drills","Video"], l:"ES · EN"},
-    {i:"SM", n:"Shanice Marchena",r:"Academy manager",    b:"Schedules, squads and the kantine. If something is wrong in the app, she fixes it.", t:["Scheduling","Kantine"], l:"PAP · NL · EN"}
+    {i:"MJ", n:"MJ", r:"Head coach", b:"Runs every A2PRO session at Padelx: the kids academy, the squad blocks, the privates and the camp weeks.", t:["Squad","Kids","Privates","Camps"], l:"PAP · NL · EN · ES"}
   ];
 
   var SKILLS = [
-    {n:"Bandeja",        es:"defensive smash",       v:6.4, d:0.8, by:"RM", on:"2 Sep"},
-    {n:"Víbora",         es:"attacking slice smash", v:4.9, d:0.3, by:"RM", on:"2 Sep"},
-    {n:"Wall exit",      es:"salida de pared",       v:7.1, d:1.1, by:"RM", on:"2 Sep"},
-    {n:"Volley",         es:"volea",                 v:6.8, d:0.2, by:"YP", on:"2 Sep"},
-    {n:"Chiquita",       es:"low ball to the feet",  v:5.6, d:0,   by:"RM", on:"2 Sep"},
-    {n:"Positioning",    es:"posicionamiento",       v:7.4, d:0.5, by:"RM", on:"2 Sep"},
-    {n:"Serve & return", es:"saque y resto",         v:6.0, d:0.4, by:"YP", on:"2 Sep"},
-    {n:"Agility",        es:"footwork & speed",      v:7.8, d:0.6, by:"YP", on:"9 Jun"},
-    {n:"Match head",     es:"decision making",       v:5.2, d:0.2, by:"RM", on:"2 Sep"}
+    {n:"Bandeja",        es:"defensive smash",       v:6.4, d:0.8, by:"MJ", on:"2 Sep"},
+    {n:"Víbora",         es:"attacking slice smash", v:4.9, d:0.3, by:"MJ", on:"2 Sep"},
+    {n:"Wall exit",      es:"salida de pared",       v:7.1, d:1.1, by:"MJ", on:"2 Sep"},
+    {n:"Volley",         es:"volea",                 v:6.8, d:0.2, by:"MJ", on:"2 Sep"},
+    {n:"Chiquita",       es:"low ball to the feet",  v:5.6, d:0,   by:"MJ", on:"2 Sep"},
+    {n:"Positioning",    es:"posicionamiento",       v:7.4, d:0.5, by:"MJ", on:"2 Sep"},
+    {n:"Serve & return", es:"saque y resto",         v:6.0, d:0.4, by:"MJ", on:"2 Sep"},
+    {n:"Agility",        es:"footwork & speed",      v:7.8, d:0.6, by:"MJ", on:"9 Jun"},
+    {n:"Smash",          es:"remate",                v:5.8, d:0.4, by:"MJ", on:"2 Sep"},
+    {n:"Backhand",       es:"revés",                 v:6.2, d:0.3, by:"MJ", on:"2 Sep"},
+    {n:"Match head",     es:"decision making",       v:5.2, d:0.2, by:"MJ", on:"2 Sep"}
   ];
 
   var RADAR = [
@@ -43,37 +39,40 @@ window.R2 = (function(){
     {k:"Posición", me:7.4, sq:6.2}
   ];
 
+  /* Sample point prices. Real ones come from MJ. */
+  var ACCOUNTS = [
+    {email:"mj@a2pro.cw",     name:"MJ",                   initials:"MJ",  role:"coach"},
+    {email:"asccur@gmail.com",name:"Adrian Silva da Costa",initials:"ASC", role:"player"}
+  ];
+
   var SHOP = [
-    {ico:"💧", n:"Awa / water",        s:"500ml bottle",         c:40},
-    {ico:"🥤", n:"Sport drink",        s:"Cold, from the bar",   c:60},
-    {ico:"🥪", n:"Tosti",              s:"Ham and cheese",       c:90},
-    {ico:"🍹", n:"Batido",             s:"Fresh fruit shake",    c:120},
-    {ico:"🎾", n:"Grip",               s:"Overgrip, any colour", c:150},
-    {ico:"🥫", n:"Tube of balls",      s:"3 match balls",        c:400},
-    {ico:"🧢", n:"A2PRO cap",          s:"Club merch",           c:600},
-    {ico:"👕", n:"A2PRO training tee", s:"Sizes XS to XL",       c:1200}
+    {ico:"🎾", n:"Overgrip",           s:"Any colour, fitted",       c:150},
+    {ico:"🥫", n:"Ball set",           s:"Tube of 3 match balls",    c:400},
+    {ico:"🧴", n:"A2PRO bottle",       s:"750ml, club branded",      c:650},
+    {ico:"👕", n:"A2PRO tee",          s:"Limited run, XS to XL",    c:1400},
+    {ico:"🏸", n:"One lesson",         s:"60 minutes, one to one",   c:2500}
   ];
 
   var DRILLS = [
-    {n:"Wall control, 50 touches", by:"Coach Rafa",     ago:"3 days ago",  dur:"6:12",  lvl:"All levels",  kit:"Wall + ball",     g:"linear-gradient(140deg,#1B3B57,#0F2233)"},
-    {n:"Shadow bandeja, no ball",  by:"Coach Rafa",     ago:"1 week ago",  dur:"4:38",  lvl:"Intermediate",kit:"Racket only",     g:"linear-gradient(140deg,#23485E,#12283A)"},
-    {n:"Mobility routine",         by:"Coach Yaritza",  ago:"1 week ago",  dur:"11:05", lvl:"All levels",  kit:"No kit",          g:"linear-gradient(140deg,#2A4A45,#0F2233)"},
-    {n:"Reaction wall, partner",   by:"Coach Dennis",   ago:"2 weeks ago", dur:"7:20",  lvl:"Advanced",    kit:"Wall + partner",  g:"linear-gradient(140deg,#3A3050,#131F33)"},
-    {n:"Grip changes drill",       by:"Coach Lisandra", ago:"3 weeks ago", dur:"3:45",  lvl:"Beginner",    kit:"Racket only",     g:"linear-gradient(140deg,#4A3326,#16243A)"},
-    {n:"Core for padel, 10 min",   by:"Coach Yaritza",  ago:"1 month ago", dur:"10:00", lvl:"All levels",  kit:"Mat",             g:"linear-gradient(140deg,#1F4150,#101F31)"}
+    {n:"Wall control, 50 touches", by:"MJ",     ago:"3 days ago",  dur:"6:12",  lvl:"All levels",  kit:"Wall + ball",     g:"linear-gradient(140deg,#1B3B57,#0F2233)"},
+    {n:"Shadow bandeja, no ball",  by:"MJ",     ago:"1 week ago",  dur:"4:38",  lvl:"Intermediate",kit:"Racket only",     g:"linear-gradient(140deg,#23485E,#12283A)"},
+    {n:"Mobility routine",         by:"MJ",  ago:"1 week ago",  dur:"11:05", lvl:"All levels",  kit:"No kit",          g:"linear-gradient(140deg,#2A4A45,#0F2233)"},
+    {n:"Reaction wall, partner",   by:"MJ",   ago:"2 weeks ago", dur:"7:20",  lvl:"Advanced",    kit:"Wall + partner",  g:"linear-gradient(140deg,#3A3050,#131F33)"},
+    {n:"Grip changes drill",       by:"MJ", ago:"3 weeks ago", dur:"3:45",  lvl:"Beginner",    kit:"Racket only",     g:"linear-gradient(140deg,#4A3326,#16243A)"},
+    {n:"Core for padel, 10 min",   by:"MJ",  ago:"1 month ago", dur:"10:00", lvl:"All levels",  kit:"Mat",             g:"linear-gradient(140deg,#1F4150,#101F31)"}
   ];
 
   var FEED = [
-    {c:"g", t:"Squad training attended · Court 3",  d:"Thu 11 Sep · checked in by Rafa", a:"+60"},
-    {c:"o", t:"Redeemed: Batido at the kantine",    d:"Thu 11 Sep · code 7K2QM",         a:"-120", neg:true},
+    {c:"g", t:"Squad training attended · Court 3",  d:"Thu 11 Sep · checked in by MJ", a:"+60"},
+    {c:"o", t:"Redeemed: Overgrip in the shop",     d:"Thu 11 Sep · code 7K2QM",         a:"-150", neg:true},
     {c:"",  t:"Home drill completed: Wall control", d:"Wed 10 Sep",                      a:"+15"},
     {c:"g", t:"Squad training attended · Court 1",  d:"Tue 9 Sep · on time bonus",       a:"+60"},
-    {c:"",  t:"Skill assessment updated by Rafa",   d:"Tue 2 Sep · rating 3.00 → 3.25",  a:""},
-    {c:"g", t:"Camp day · Zeelandia",               d:"Fri 29 Aug",                      a:"+100"}
+    {c:"",  t:"Skill assessment updated by MJ",   d:"Tue 2 Sep · rating 3.00 → 3.25",  a:""},
+    {c:"g", t:"Camp day · Padelx",               d:"Fri 29 Aug",                      a:"+100"}
   ];
 
   var HISTORY = [
-    {c:"o", t:"Batido",        d:"11 Sep · confirmed by kantine staff", a:"-120", neg:true},
+    {c:"o", t:"Overgrip",      d:"11 Sep · confirmed by MJ",           a:"-150", neg:true},
     {c:"o", t:"Overgrip",      d:"28 Aug · confirmed",                  a:"-150", neg:true},
     {c:"o", t:"Awa 500ml",     d:"21 Aug · confirmed",                  a:"-40",  neg:true},
     {c:"o", t:"Tube of balls", d:"2 Aug · confirmed",                   a:"-400", neg:true}
@@ -138,10 +137,10 @@ window.R2 = (function(){
      Squad trains Tuesday and Thursday, camp on Saturday, privates on request. */
   var SCHEDULE = (function(){
     var out = [], now = new Date(), plan = [
-      {dow:2, h:17, m:0,  dur:90, kind:"Squad training", court:"Court 3, Jan Thiel",  coach:"Rafa Montoya",    cap:8,  taken:5, pts:60, note:"Bandeja block, bring the blue grip"},
-      {dow:4, h:17, m:0,  dur:90, kind:"Squad training", court:"Court 1, Jan Thiel",  coach:"Rafa Montoya",    cap:8,  taken:8, pts:60, note:"Match play, four courts running"},
-      {dow:6, h:9,  m:0,  dur:180,kind:"Camp day",       court:"Zeelandia, all courts",coach:"Kevin Martina",  cap:24, taken:17,pts:100,note:"Bring water, sunblock and a second shirt"},
-      {dow:1, h:18, m:30, dur:60, kind:"Private lesson", court:"Court 2, Jan Thiel",  coach:"Lisandra Cova",   cap:1,  taken:0, pts:40, note:"Wall exits, booked by you"}
+      {dow:2, h:17, m:0,  dur:90, kind:"Squad training", court:"Court 3, Padelx",  coach:"MJ",    cap:8,  taken:5, pts:60, note:"Bandeja block, bring the blue grip"},
+      {dow:4, h:17, m:0,  dur:90, kind:"Squad training", court:"Court 1, Padelx",  coach:"MJ",    cap:8,  taken:8, pts:60, note:"Match play, four courts running"},
+      {dow:6, h:9,  m:0,  dur:180,kind:"Camp day",       court:"Padelx, all courts",coach:"MJ",  cap:24, taken:17,pts:100,note:"Bring water, sunblock and a second shirt"},
+      {dow:1, h:18, m:30, dur:60, kind:"Private lesson", court:"Court 2, Padelx",  coach:"MJ",   cap:1,  taken:0, pts:40, note:"Wall exits, booked by you"}
     ];
     plan.forEach(function(p, pi){
       for(var w=0; w<3; w++){
@@ -196,7 +195,7 @@ window.R2 = (function(){
 
   DRILLS.forEach(function(d, i){ d.id = "d" + i; });
 
-  return {PLAYER:PLAYER, BODY:BODY, COACHES:COACHES, SKILLS:SKILLS, RADAR:RADAR, SHOP:SHOP,
+  return {PLAYER:PLAYER, BODY:BODY, COACHES:COACHES, ACCOUNTS:ACCOUNTS, SKILLS:SKILLS, RADAR:RADAR, SHOP:SHOP,
           DRILLS:DRILLS, FEED:FEED, HISTORY:HISTORY, ATT:ATT,
           SCHEDULE:SCHEDULE, ROSTER:ROSTER, BADGES:BADGES, EARN:EARN};
 })();

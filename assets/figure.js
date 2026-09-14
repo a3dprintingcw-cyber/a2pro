@@ -209,7 +209,30 @@ window.r2figure = (function(){
           '</g>';
       }
 
-      function draw(sk){
+      /* Real silhouettes now, one PNG per shot, tinted to the score band by using the
+         image as a CSS mask over a solid colour. The vector figure below stays as the
+         fallback: if a PNG ever fails to load the viewer still shows something. */
+      var SHOT_FILE = {
+        "Bandeja":"bandeja", "Víbora":"vibora", "Wall exit":"wall-exit", "Volley":"volley",
+        "Chiquita":"chiquita", "Positioning":"positioning", "Serve":"serve",
+        "Agility":"agility", "Match head":"match-head"
+      };
+      var shotOk = {};
+
+      function drawPhoto(sk, c){
+        var file = SHOT_FILE[sk.k];
+        if(!file) return false;
+        var url = "assets/shots/" + file + ".png";
+        figure.innerHTML =
+          '<div class="shotwrap">'+
+            '<div class="shotimg" role="img" aria-label="'+sk.k+', rated '+sk.v.toFixed(1)+' out of 10" '+
+            'style="background-color:'+c+';-webkit-mask-image:url('+url+');mask-image:url('+url+')"></div>'+
+            '<div class="shotshadow"></div>'+
+          '</div>';
+        return true;
+      }
+
+      function drawVector(sk){
         var p = sk.pose, c = band(sk.v).c;
         var ms = lerp(p.sL, p.sR, .5), mh = lerp(p.hL, p.hR, .5);
         var chest = lerp(ms, mh, .26), waist = lerp(ms, mh, .66);
@@ -325,6 +348,25 @@ window.r2figure = (function(){
           racket(p.wR, p.ra, c) + ball +
           '</svg>';
 
+        cap.innerHTML = '<div class="bk">'+sk.k+'</div>'+
+          '<div class="be">'+sk.es+' &middot; '+sk.part+'</div>'+
+          '<div class="bv" style="color:'+c+'">'+sk.v.toFixed(1)+'<small>/10</small></div>';
+      }
+
+
+      function draw(sk){
+        var c = band(sk.v).c;
+        var file = SHOT_FILE[sk.k];
+        if(file && shotOk[file] !== false && drawPhoto(sk, c)){
+          if(shotOk[file] === undefined){
+            var probe = new Image();
+            probe.onload  = function(){ shotOk[file] = true; };
+            probe.onerror = function(){ shotOk[file] = false; drawVector(sk); };
+            probe.src = "assets/shots/" + file + ".png";
+          }
+        } else {
+          drawVector(sk);
+        }
         cap.innerHTML = '<div class="bk">'+sk.k+'</div>'+
           '<div class="be">'+sk.es+' &middot; '+sk.part+'</div>'+
           '<div class="bv" style="color:'+c+'">'+sk.v.toFixed(1)+'<small>/10</small></div>';

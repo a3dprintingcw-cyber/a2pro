@@ -1,10 +1,10 @@
-/* A2PRO — the app. Player, coach and kantine views over the same local state.
+/* A2PRO — the app. Player and coach views over the same local state.
    Sample data in data.js, state in store.js, language in i18n.js, drawing in figure.js. */
 (function(){
   "use strict";
 
   var D = window.R2, S = window.r2store, I = window.r2i18n;
-  var CODE_LIFE = 10 * 60 * 1000;   /* a kantine code is good for ten minutes */
+  var CODE_LIFE = 10 * 60 * 1000;   /* a shop code is good for ten minutes */
 
   function $(s, r){ return (r || document).querySelector(s); }
   function $$(s, r){ return Array.prototype.slice.call((r || document).querySelectorAll(s)); }
@@ -57,10 +57,27 @@
     {id:"squad",    roles:"player coach", icon:'<path d="M3 19v-1.5C3 15 5 13.5 7.5 13.5S12 15 12 17.5V19M19 19v-1.5c0-2-1.3-3.3-3.2-3.8"/><circle cx="7.5" cy="8" r="3"/><path d="M15 5.2a3 3 0 0 1 0 5.6"/>'},
     {id:"coach",    roles:"player coach", icon:'<circle cx="8" cy="8" r="3.2"/><path d="M3 19c0-3 2.4-5 5-5s5 2 5 5M16 6.5a3 3 0 0 1 0 6M17 19c0-2.2-.9-3.9-2.3-4.6"/>'},
     {id:"staff",    roles:"coach",        icon:'<path d="M11 3l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L6.5 16.8l.9-5L3.8 8.3l5-.7z"/>'},
-    {id:"bar",      roles:"bar",          icon:'<path d="M4 4h14l-6 7v7h3M4 4l6 7M8 18h4"/>'}
+    {id:"bar",      roles:"coach",        icon:'<path d="M4 4h14l-6 7v7h3M4 4l6 7M8 18h4"/>'}
   ];
 
-  var role = S.all.role || "player";
+  /* ---------------------------------------------------------------- who is signed in
+     No backend, so there is no real authentication. The email typed at the gate is
+     looked up in D.ACCOUNTS: MJ's address opens the coach backoffice, anything else
+     is treated as a player account. Swapping this for real auth later means replacing
+     signIn() and nothing else. */
+  function findAccount(email){
+    var e = String(email || "").trim().toLowerCase();
+    if(!e) return null;
+    var hit = (D.ACCOUNTS || []).filter(function(a){ return a.email.toLowerCase() === e; })[0];
+    if(hit) return hit;
+    var stem = e.split("@")[0].replace(/[._-]+/g, " ").trim();
+    var name = stem.split(" ").map(function(w){ return w.charAt(0).toUpperCase() + w.slice(1); }).join(" ") || "Player";
+    return {email:e, name:name, role:"player",
+            initials:name.split(" ").map(function(w){ return w.charAt(0); }).join("").slice(0,3).toUpperCase()};
+  }
+
+  var account = S.all.account || null;
+  var role = account && account.role === "coach" ? "coach" : "player";
 
   function navFor(r){
     var list = NAV.filter(function(n){ return n.roles.indexOf(r) !== -1; });
@@ -130,7 +147,11 @@
 
   function route(hash){
     if(hash.indexOf("verify-") === 0){
-      setRole("bar");
+      if(role !== "coach"){
+        window.r2toast(t("k.coachOnly"));
+        show(navFor(role)[0].id, false);
+        return;
+      }
       show("bar", false);
       var input = $("#barCode");
       if(input){ input.value = hash.slice(7).toUpperCase(); checkCode(); }
@@ -141,13 +162,47 @@
 
   /* ---------------------------------------------------------------- role switch */
 
-  function setRole(r){
-    role = r;
-    S.patch({role:r});
-    $$(".roles [data-role]").forEach(function(b){ b.classList.toggle("on", b.dataset.role === r); });
-    document.body.dataset.role = r;
-    buildNav();
-    show(navFor(r)[0].id, true);
+  function applyAccount(){
+    role = account && account.role === "coach" ? "coach" : "player";
+    document.body.dataset.role = role;
+    var tag = $("#coachTag");
+    if(tag) tag.hidden = role !== "coach";
+    var av = $("#navAvatar");
+    if(av && account) av.textContent = account.initials || "?";
+    var em = $("#sideEmail");
+    if(em && account) em.textContent = account.email;
+  }
+
+  function signIn(email){
+    account = findAccount(email);
+    if(!account) return false;
+    S.patch({account:account});
+    applyAccount();
+    renderAll();
+    if(window.r2figure) window.r2figure.mount();
+    closeGate();
+    show(navFor(role)[0].id, true);
+    return true;
+  }
+
+  function signOut(){
+    account = null;
+    S.patch({account:null});
+    openGate();
+  }
+
+  function openGate(){
+    var g = $("#gate");
+    if(!g) return;
+    g.hidden = false;
+    document.body.classList.add("gated");
+    var f = $("#gateEmail");
+    if(f) setTimeout(function(){ f.focus(); }, 50);
+  }
+  function closeGate(){
+    var g = $("#gate");
+    if(g) g.hidden = true;
+    document.body.classList.remove("gated");
   }
 
   /* ---------------------------------------------------------------- points */
@@ -373,7 +428,7 @@
     });
   }
 
-  /* ---------------------------------------------------------------- kantine */
+  /* ---------------------------------------------------------------- shop */
 
   function newCode(){
     var s = "", abc = "ACDEFGHJKLMNPQRTUVWXY3479";
@@ -673,7 +728,7 @@
       var nm = $("#drillName").value.trim();
       if(!nm){ $("#drillName").focus(); return; }
       D.DRILLS.unshift({
-        id:"d" + Date.now(), n:nm, by:"Coach Rafa",
+        id:"d" + Date.now(), n:nm, by:"MJ",
         dur:$("#drillDur").value || "5:00",
         lvl:$("#drillLvl").value, kit:$("#drillKit").value || "Racket only",
         g:"linear-gradient(140deg,#1B3B57,#0F2233)"
@@ -708,7 +763,7 @@
     if(e.key === "Enter" && e.target.id === "barCode"){ e.preventDefault(); checkCode(); }
   });
 
-  /* ---------------------------------------------------------------- kantine staff */
+  /* ---------------------------------------------------------------- shop desk */
 
   function checkCode(){
     var code = ($("#barCode").value || "").trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
@@ -910,9 +965,10 @@
     I.apply(document);
 
     var P = D.PLAYER;
-    $("#navAvatar").textContent = P.initials;
-    $("#sideEmail").textContent = P.email;
-    $("#greeting").textContent = t("d.greeting") + ", " + P.first;
+    var who = account || P;
+    $("#navAvatar").textContent = who.initials || P.initials;
+    $("#sideEmail").textContent = who.email || P.email;
+    $("#greeting").textContent = t("d.greeting") + ", " + String(who.name || P.first).split(" ")[0];
     $("#squadLine").textContent = P.squad + " · " + P.days + " · " + P.coach;
   }
 
@@ -921,21 +977,46 @@
     if(window.r2figure) window.r2figure.mount();
   });
 
+  document.addEventListener("submit", function(e){
+    if(e.target.id !== "gateForm") return;
+    e.preventDefault();
+    var v = $("#gateEmail").value;
+    if(!signIn(v)) $("#gateEmail").focus();
+  });
+
+  function openAccount(){
+    if(!account) return;
+    var langs = I.langs.map(function(l){
+      return '<button class="acc-lang'+(l.id===I.current?" on":"")+'" data-lang="'+l.id+'">'+l.short+'</button>';
+    }).join("");
+    modal(
+      '<div class="acc">'+
+        '<div class="avatar lg">'+esc(account.initials || "?")+'</div>'+
+        '<h3>'+esc(account.name || "")+'</h3>'+
+        '<div class="acc-mail">'+esc(account.email || "")+'</div>'+
+        (role === "coach" ? '<span class="coachtag" style="margin-top:10px">'+t("c.coachArea")+'</span>' : '')+
+        '<div class="acc-langs">'+langs+'</div>'+
+        '<button class="btn btn-ghost btn-sm" id="accOut">'+t("c.signOut")+'</button>'+
+      '</div>');
+  }
+
   document.addEventListener("click", function(e){
-    var r = e.target.closest(".roles [data-role]");
-    if(r) setRole(r.dataset.role);
+    if(e.target.closest("#gateDemo")){ signIn(D.PLAYER.email); return; }
+    if(e.target.closest("#navAvatar")){ openAccount(); return; }
+    if(e.target.closest("#accOut")){ closeModal(); signOut(); return; }
+    if(e.target.closest("#signOut")){ signOut(); return; }
   });
 
   I.set(S.all.lang || "en", true);
-  document.body.dataset.role = role;
-  $$(".roles [data-role]").forEach(function(b){ b.classList.toggle("on", b.dataset.role === role); });
+  applyAccount();
 
   applyEdits();
   renderAll();
   if(window.r2figure) window.r2figure.mount();
-  route(location.hash.slice(1) || "dash");
+  if(account) route(location.hash.slice(1) || "dash");
+  else openGate();
 
-  /* the court wifi at Jan Thiel is not famous for its reliability */
+  /* the court wifi at Padelx is not famous for its reliability */
   function net(){
     var el = $("#netbar");
     el.hidden = navigator.onLine;

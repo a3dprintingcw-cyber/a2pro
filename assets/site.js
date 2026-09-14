@@ -75,7 +75,7 @@
         b.classList.toggle("on", b.dataset.lang === window.r2i18n.current);
       });
     }
-    pick.addEventListener("click", function(e){
+    document.addEventListener("click", function(e){
       var b = e.target.closest("[data-lang]");
       if(!b) return;
       window.r2i18n.set(b.dataset.lang);
