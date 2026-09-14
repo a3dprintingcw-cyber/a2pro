@@ -1,10 +1,10 @@
 /* A2PRO service worker. App shell cached so the courtside wifi stops mattering. */
-var CACHE = "a2pro-v8";
+var CACHE = "a2pro-v9";
 var SHELL = [
   "./", "index.html", "app.html", "academies.html", "programs.html",
   "coaches.html", "pricing.html", "404.html", "manifest.webmanifest",
-  "assets/styles.css?v=8", "assets/data.js?v=8", "assets/store.js?v=8", "assets/i18n.js?v=8",
-  "assets/qr.js?v=8", "assets/scan.js?v=8", "assets/site.js?v=8", "assets/figure.js?v=8", "assets/app.js?v=8",
+  "assets/styles.css?v=9", "assets/data.js?v=9", "assets/store.js?v=9", "assets/i18n.js?v=9",
+  "assets/qr.js?v=9", "assets/scan.js?v=9", "assets/site.js?v=9", "assets/figure.js?v=9", "assets/app.js?v=9",
   "assets/logo.png", "assets/favicon.png", "assets/icon-192.png", "assets/icon-512.png"
 ];
 
