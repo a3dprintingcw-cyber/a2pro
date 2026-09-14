@@ -1,5 +1,5 @@
 /* A2PRO service worker. App shell cached so the courtside wifi stops mattering. */
-var CACHE = "a2pro-v10";
+var CACHE = "a2pro-v11";
 var SHELL = [
   "./", "index.html", "app.html", "academies.html", "programs.html",
   "coaches.html", "pricing.html", "404.html", "manifest.webmanifest",
