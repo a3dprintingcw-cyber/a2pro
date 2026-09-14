@@ -709,3 +709,12 @@ body.locked{position:fixed;left:0;right:0;width:100%;overflow:hidden}
 .clubtag{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--text);padding:7px 12px;border:1px solid var(--line);border-radius:100px}
 .clubtag .dot{width:7px;height:7px;border-radius:50%;background:var(--good);flex:none}
 @media (max-width:900px){ .clubtag{order:4} }
+
+/* ---------- the A2PRO mark ---------- */
+.logo{display:block;height:38px;width:auto;max-width:100%}
+.logo.sm{height:28px}
+.brand{display:inline-flex;align-items:center}
+@media (max-width:680px){
+  .logo{height:30px}
+  .logo.sm{height:24px}
+}
