@@ -313,9 +313,7 @@
     var cheapest = D.SHOP.reduce(function(a,b){ return b.c < a.c ? b : a; }, D.SHOP[0]);
     var pick;
 
-    if(next && !S.rsvp(next.id)){
-      pick = {go:"schedule", label:t("d.nbaRsvp"), sub:fmtDay(next.date) + " · " + fmtTime(next.date)};
-    } else if((S.club.weekDrills || 0) < 1){
+    if((S.club.weekDrills || 0) < 1){
       pick = {go:"home", label:t("d.nbaDrill"), sub:"+15 " + t("c.points")};
     } else if(cheapest && points() >= cheapest.c){
       pick = {go:"pts", label:t("d.nbaSpend"), sub:cheapest.n + " · " + fmt(cheapest.c) + " " + t("c.pts")};

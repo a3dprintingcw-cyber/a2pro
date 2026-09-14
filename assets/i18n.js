@@ -19,7 +19,7 @@ window.r2i18n = (function(){
     "nav.pts":      {en:"Points",         pap:"Puntonan",         nl:"Punten",         es:"Puntos"},
     "nav.home":     {en:"Home training",  pap:"Entreno na kas",   nl:"Thuistraining",  es:"Entreno en casa"},
     "nav.squad":    {en:"Squad",          pap:"Skuadra",          nl:"Squad",          es:"Equipo"},
-    "nav.coach":    {en:"Coaches",        pap:"Coachnan",         nl:"Coaches",        es:"Entrenadores"},
+    "nav.coach":    {en:"Your coach",        pap:"Coachnan",         nl:"Coaches",        es:"Entrenadores"},
     "nav.staff":    {en:"Coach tools",    pap:"Hèrmèntnan",       nl:"Coach tools",    es:"Panel coach"},
     "nav.bar":      {en:"Shop desk",      pap:"Desk di tienda",   nl:"Shopbalie",      es:"Mostrador"},
     "short.dash":   {en:"Home",           pap:"Kas",              nl:"Start",          es:"Inicio"},
@@ -28,7 +28,7 @@ window.r2i18n = (function(){
     "short.pts":    {en:"Points",         pap:"Punto",            nl:"Punten",         es:"Puntos"},
     "short.home":   {en:"Training",       pap:"Entreno",          nl:"Training",       es:"Entreno"},
     "short.squad":  {en:"Squad",          pap:"Skuadra",          nl:"Squad",          es:"Equipo"},
-    "short.coach":  {en:"Coaches",        pap:"Coach",            nl:"Coaches",        es:"Coaches"},
+    "short.coach":  {en:"Coach",        pap:"Coach",            nl:"Coaches",        es:"Coaches"},
 
     /* ---- shared ---- */
     "c.confirm":    {en:"Confirm",        pap:"Konfirmá",         nl:"Bevestigen",     es:"Confirmar"},
