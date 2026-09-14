@@ -90,17 +90,17 @@ window.R2 = (function(){
   var BODY = [
     {k:"Víbora", es:"attacking slice smash", part:"racket forearm", v:4.9, pose:{
       head:[112,46], sL:[92,82], sR:[136,78], hL:[102,166], hR:[134,166],
-      eR:[170,58], wR:[192,38], eL:[70,98], wL:[58,66],
+      eR:[170,58], wR:[192,38], eL:[66,100], wL:[46,66],
       kL:[92,216], aL:[84,268], kR:[142,214], aR:[154,266], ra:-50}},
 
     {k:"Bandeja", es:"defensive smash", part:"shoulder", v:6.4, pose:{
       head:[116,46], sL:[94,82], sR:[140,80], hL:[104,166], hR:[136,166],
-      eR:[178,68], wR:[204,52], eL:[74,102], wL:[62,72],
+      eR:[178,68], wR:[204,52], eL:[70,100], wL:[54,60],
       kL:[96,216], aL:[88,268], kR:[144,214], aR:[156,266], ra:-25}},
 
     {k:"Volley", es:"volea", part:"front arm", v:6.8, pose:{
       head:[118,48], sL:[96,84], sR:[140,84], hL:[104,168], hR:[136,168],
-      eR:[160,112], wR:[176,86], eL:[82,114], wL:[100,92],
+      eR:[162,112], wR:[180,84], eL:[76,116], wL:[62,86],
       kL:[92,214], aL:[80,266], kR:[146,214], aR:[160,266], ra:-18}},
 
     {k:"Serve", es:"saque", part:"racket hand", v:6.0, pose:{
@@ -120,8 +120,8 @@ window.R2 = (function(){
 
     {k:"Positioning", es:"posicionamiento", part:"core", v:7.4, pose:{
       head:[120,50], sL:[94,86], sR:[146,86], hL:[104,166], hR:[136,166],
-      eR:[156,120], wR:[138,90], eL:[84,120], wL:[104,94],
-      kL:[86,212], aL:[70,264], kR:[154,212], aR:[170,264], ra:-82}},
+      eR:[164,130], wR:[188,116], eL:[80,128], wL:[120,122],
+      kL:[86,212], aL:[70,264], kR:[154,212], aR:[170,264], ra:-16}},
 
     {k:"Agility", es:"footwork & speed", part:"legs", v:7.8, pose:{
       head:[106,46], sL:[86,82], sR:[128,78], hL:[102,162], hR:[130,164],
@@ -130,8 +130,8 @@ window.R2 = (function(){
 
     {k:"Match head", es:"decision making", part:"head", v:5.2, pose:{
       head:[120,40], sL:[98,76], sR:[142,76], hL:[106,168], hR:[134,168],
-      eR:[154,122], wR:[162,166], eL:[88,122], wL:[82,164],
-      kL:[104,220], aL:[100,268], kR:[136,220], aR:[140,268], ra:74}}
+      eR:[158,124], wR:[168,168], eL:[84,124], wL:[102,160],
+      kL:[104,220], aL:[98,268], kR:[136,220], aR:[142,268], ra:66}}
   ];
 
   /* Sessions are generated from today so the prototype never shows a stale week.
