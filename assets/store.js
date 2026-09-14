@@ -7,6 +7,7 @@ window.r2store = (function(){
   "use strict";
 
   var KEY = "a2pro.v1";
+  var MY_ID = "p1";            /* the demo player's row in the roster */
 
   var DEFAULTS = {
     lang:      "en",
@@ -22,7 +23,9 @@ window.r2store = (function(){
     redemptions: [],          /* {code, item, cost, at, status} */
     rsvp:        {},          /* sessionId: "in" | "out" */
     checkins:    {},          /* sessionId: {playerId: true}, coach view */
-    skillEdits:  {},          /* skill name: new score, coach view */
+    assess:      {},          /* playerId: {skill name: score} set by the coach */
+    notes:       {},          /* playerId: [{t, at}] coach notes */
+    skillEdits:  {},          /* legacy, migrated into assess on first read */
     weekDrills:  0
   };
 
@@ -122,8 +125,38 @@ window.r2store = (function(){
       save();
     },
 
-    setSkill: function(name, value){
-      club().skillEdits[name] = value;
+    /* Scores hang off a player, so the coach can assess the whole squad instead of
+       one shared sheet. Older saves kept a single flat skillEdits map, which was
+       always the demo player's, so it migrates there. */
+    assess: function(playerId){
+      var c = club();
+      if(!c.assess) c.assess = {};
+      if(c.skillEdits && Object.keys(c.skillEdits).length){
+        c.assess[MY_ID] = Object.assign({}, c.skillEdits, c.assess[MY_ID] || {});
+        c.skillEdits = {};
+        save();
+      }
+      if(!c.assess[playerId]) c.assess[playerId] = {};
+      return c.assess[playerId];
+    },
+    setSkill: function(playerId, name, value){
+      this.assess(playerId)[name] = value;
+      save();
+    },
+    setSkills: function(playerId, map){
+      var m = this.assess(playerId);
+      for(var k in map) m[k] = map[k];
+      save();
+    },
+
+    notes: function(playerId){
+      var c = club();
+      if(!c.notes) c.notes = {};
+      if(!c.notes[playerId]) c.notes[playerId] = [];
+      return c.notes[playerId];
+    },
+    addNote: function(playerId, text){
+      this.notes(playerId).unshift({t:text, at:Date.now()});
       save();
     },
 

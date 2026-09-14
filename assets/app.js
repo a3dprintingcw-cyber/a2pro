@@ -48,17 +48,26 @@
 
   /* ---------------------------------------------------------------- navigation */
 
-  var NAV = [
-    {id:"dash",     roles:"player coach", icon:'<path d="M3 10.5L11 4l8 6.5V19a1 1 0 0 1-1 1h-4v-5H8v5H4a1 1 0 0 1-1-1z"/>'},
-    {id:"schedule", roles:"player coach", icon:'<rect x="3" y="4.5" width="16" height="15" rx="2"/><path d="M3 9h16M7.5 2.5v4M14.5 2.5v4"/>'},
-    {id:"dev",      roles:"player coach", icon:'<path d="M4 18V9M9.5 18V4M15 18v-6M20.5 18v-9"/>'},
-    {id:"pts",      roles:"player coach", icon:'<circle cx="11" cy="11" r="8"/><path d="M11 7v8M8 11h6"/>'},
-    {id:"home",     roles:"player coach", icon:'<path d="M4 5h16v11H4z"/><path d="M10 8.5l4.5 3-4.5 3z"/>'},
-    {id:"squad",    roles:"player coach", icon:'<path d="M3 19v-1.5C3 15 5 13.5 7.5 13.5S12 15 12 17.5V19M19 19v-1.5c0-2-1.3-3.3-3.2-3.8"/><circle cx="7.5" cy="8" r="3"/><path d="M15 5.2a3 3 0 0 1 0 5.6"/>'},
-    {id:"coach",    roles:"player coach", icon:'<circle cx="8" cy="8" r="3.2"/><path d="M3 19c0-3 2.4-5 5-5s5 2 5 5M16 6.5a3 3 0 0 1 0 6M17 19c0-2.2-.9-3.9-2.3-4.6"/>'},
-    {id:"staff",    roles:"coach",        icon:'<path d="M11 3l2.2 4.6 5 .7-3.6 3.5.9 5-4.5-2.4L6.5 16.8l.9-5L3.8 8.3l5-.7z"/>'},
-    {id:"bar",      roles:"coach",        icon:'<path d="M4 4h14l-6 7v7h3M4 4l6 7M8 18h4"/>'}
-  ];
+  var ICON = {
+    dash:    '<path d="M3 10.5L11 4l8 6.5V19a1 1 0 0 1-1 1h-4v-5H8v5H4a1 1 0 0 1-1-1z"/>',
+    schedule:'<rect x="3" y="4.5" width="16" height="15" rx="2"/><path d="M3 9h16M7.5 2.5v4M14.5 2.5v4"/>',
+    dev:     '<path d="M4 18V9M9.5 18V4M15 18v-6M20.5 18v-9"/>',
+    pts:     '<circle cx="11" cy="11" r="8"/><path d="M11 7v8M8 11h6"/>',
+    home:    '<path d="M4 5h16v11H4z"/><path d="M10 8.5l4.5 3-4.5 3z"/>',
+    squad:   '<path d="M3 19v-1.5C3 15 5 13.5 7.5 13.5S12 15 12 17.5V19M19 19v-1.5c0-2-1.3-3.3-3.2-3.8"/><circle cx="7.5" cy="8" r="3"/><path d="M15 5.2a3 3 0 0 1 0 5.6"/>',
+    coach:   '<circle cx="8" cy="8" r="3.2"/><path d="M3 19c0-3 2.4-5 5-5s5 2 5 5M16 6.5a3 3 0 0 1 0 6M17 19c0-2.2-.9-3.9-2.3-4.6"/>',
+    today:   '<circle cx="11" cy="11" r="8"/><path d="M11 6v5l3.5 2"/>',
+    check:   '<path d="M4 11.5l4.5 4.5L19 5.5"/><path d="M3 19h16"/>',
+    players: '<circle cx="11" cy="7" r="3.4"/><path d="M4 19c0-3.6 3.1-6 7-6s7 2.4 7 6"/>',
+    drills:  '<rect x="3" y="5" width="16" height="12" rx="2"/><path d="M9.5 8.5l5 2.5-5 2.5z"/>',
+    bar:     '<path d="M4 5.5h13l-1.4 8.2a2 2 0 0 1-2 1.7H7.4a2 2 0 0 1-2-1.7z"/><path d="M8 5.5a3 3 0 0 1 6 0"/>'
+  };
+
+  /* The player app. */
+  var NAV_PLAYER = ["dash","schedule","dev","pts","home","squad","coach"];
+  /* MJ's backoffice. Running the academy, not training in it. */
+  var NAV_COACH  = ["today","check","players","schedule","drills","bar"];
+
 
   /* ---------------------------------------------------------------- who is signed in
      No backend, so there is no real authentication. The email typed at the gate is
@@ -80,14 +89,9 @@
   var role = account && account.role === "coach" ? "coach" : "player";
 
   function navFor(r){
-    var list = NAV.filter(function(n){ return n.roles.indexOf(r) !== -1; });
-    /* A coach opens the app to check a squad in, not to read their own stats.
-       Put the tool they came for where the thumb already is. */
-    if(r === "coach"){
-      var i = list.findIndex(function(n){ return n.id === "staff"; });
-      if(i > 1) list.splice(1, 0, list.splice(i, 1)[0]);
-    }
-    return list;
+    return (r === "coach" ? NAV_COACH : NAV_PLAYER).map(function(id){
+      return {id:id, icon:ICON[id]};
+    });
   }
 
   function shortLabel(id){
@@ -165,6 +169,8 @@
   function applyAccount(){
     role = account && account.role === "coach" ? "coach" : "player";
     document.body.dataset.role = role;
+    var chip = document.querySelector(".pts-chip");
+    if(chip) chip.hidden = role === "coach";
     var tag = $("#coachTag");
     if(tag) tag.hidden = role !== "coach";
     var av = $("#navAvatar");
@@ -383,8 +389,10 @@
 
   /* ---------------------------------------------------------------- development */
 
+  var MY_ID = "p1";
+
   function renderSkills(){
-    var edits = S.club.skillEdits;
+    var edits = S.assess(MY_ID);
     $("#skills").innerHTML = D.SKILLS.map(function(s){
       var v = edits[s.n] != null ? edits[s.n] : s.v;
       var moved = edits[s.n] != null ? (v - s.v) : s.d;
@@ -417,7 +425,7 @@
   });
 
   function applyEdits(){
-    var edits = S.club.skillEdits;
+    var edits = S.assess(MY_ID);
     D.BODY.forEach(function(b){ if(edits[b.k] != null) b.v = edits[b.k]; });
     D.SKILLS.forEach(function(s){
       if(edits[s.n] == null) return;
@@ -642,6 +650,165 @@
     }).join("");
   }
 
+  /* ---------------------------------------------------------------- coach: today */
+
+  function baseScore(p, sk){
+    return Math.max(0, Math.min(10, sk.v + (p.me ? 0 : (p.rating - 3.25) * 1.6)));
+  }
+
+  function scoreOf(p, sk){
+    var a = S.assess(p.id);
+    return a[sk.n] != null ? a[sk.n] : baseScore(p, sk);
+  }
+
+  function squadAvg(p){
+    var sum = 0;
+    D.SKILLS.forEach(function(sk){ sum += scoreOf(p, sk); });
+    return D.SKILLS.length ? sum / D.SKILLS.length : 0;
+  }
+
+  function renderToday(){
+    if(!$("#v-today")) return;
+    var next = D.SCHEDULE[0];
+    var checks = next ? S.checks(next.id) : {};
+    var inCount = Object.keys(checks).length;
+    var waiting = liveCodes().length;
+    var assessed = D.ROSTER.filter(function(p){ return Object.keys(S.assess(p.id)).length; }).length;
+
+    var sub = $("#todaySub");
+    if(sub) sub.textContent = new Intl.DateTimeFormat(locale(), {weekday:"long", day:"numeric", month:"long"}).format(new Date());
+
+    $("#todayStats").innerHTML = [
+      {v:inCount + "/" + D.ROSTER.length, k:t("t.checkedIn"), go:"check"},
+      {v:String(waiting),                 k:t("t.codesWaiting"), go:"bar"},
+      {v:String(D.ROSTER.length),         k:t("t.players"), go:"players"},
+      {v:String(assessed),                k:t("t.assessedThis"), go:"players"}
+    ].map(function(x){
+      return '<button class="cstat" data-go="'+x.go+'"><b>'+x.v+'</b><span>'+x.k+'</span></button>';
+    }).join("");
+
+    $("#todayNext").innerHTML = next ?
+      '<div class="when">'+fmtDay(next.date)+' &middot; '+fmtTime(next.date)+'</div>'+
+      '<div class="meta">'+esc(next.kind)+' &middot; '+esc(next.court)+'</div>'+
+      '<p class="muted small" style="margin-top:8px">'+esc(next.note)+'</p>'+
+      '<div class="row-btns" style="margin-top:14px">'+
+        '<button class="btn btn-primary btn-sm" data-go="check">'+t("t.startCheck")+'</button>'+
+        '<button class="btn btn-ghost btn-sm" data-go="schedule">'+t("nav.schedule")+'</button>'+
+      '</div>'
+      : '<p class="empty">'+t("t.noSession")+'</p>';
+
+    /* the three weakest scores in the squad, so MJ knows what to coach next */
+    var weak = [];
+    D.ROSTER.forEach(function(p){
+      D.SKILLS.forEach(function(sk){ weak.push({p:p, sk:sk, v:scoreOf(p, sk)}); });
+    });
+    weak.sort(function(x,y){ return x.v - y.v; });
+    $("#todayWeak").innerHTML = feedHTML(weak.slice(0,5).map(function(w){
+      return {c:"r", t:esc(w.p.n), d:w.sk.n, a:w.v.toFixed(1), tap:null};
+    }), t("t.noScores"));
+  }
+
+  /* ---------------------------------------------------------------- coach: players */
+
+  var playerQuery = "";
+
+  function renderPlayers(){
+    var box = $("#playerList");
+    if(!box) return;
+    var q = playerQuery.trim().toLowerCase();
+    var list = D.ROSTER.filter(function(p){
+      return !q || p.n.toLowerCase().indexOf(q) !== -1 || String(p.group).toLowerCase().indexOf(q) !== -1;
+    });
+    box.innerHTML = list.length ? list.map(function(p,i){
+      var avg = squadAvg(p);
+      var scored = Object.keys(S.assess(p.id)).length;
+      return '<button class="prow-btn" data-player="'+p.id+'">'+
+        '<span class="avatar sm'+(i%2?" sea":"")+'">'+p.i+'</span>'+
+        '<span class="who">'+esc(p.n)+'<small>'+p.group+' &middot; '+fmt(p.pts)+' '+t("c.pts")+'</small></span>'+
+        '<span class="pavg" style="color:'+window.r2figure.band(avg).c+'">'+avg.toFixed(1)+'</span>'+
+        '<span class="pnote">'+(scored ? scored + " " + t("t.scored") : t("t.notScored"))+'</span>'+
+        '</button>';
+    }).join("") : '<p class="empty">'+t("t.noPlayer")+'</p>';
+  }
+
+  function openPlayer(pid){
+    var p = D.ROSTER.filter(function(x){ return x.id === pid; })[0];
+    if(!p) return;
+    var a = S.assess(pid), notes = S.notes(pid);
+    var df = new Intl.DateTimeFormat(locale(), {day:"numeric", month:"short"});
+
+    var rows = D.SKILLS.map(function(sk){
+      var v = scoreOf(p, sk);
+      return '<div class="arow">'+
+        '<label for="sk-'+esc(sk.n)+'"><b>'+sk.n+'</b><small>'+sk.es+'</small></label>'+
+        '<output id="out-'+esc(sk.n)+'">'+v.toFixed(1)+'</output>'+
+        '<input type="range" id="sk-'+esc(sk.n)+'" data-skill="'+esc(sk.n)+'" min="0" max="10" step="0.1" value="'+v+'">'+
+        '</div>';
+    }).join("");
+
+    modal(
+      '<div class="pdetail" data-pid="'+pid+'">'+
+        '<div class="pd-top">'+
+          '<span class="avatar lg">'+p.i+'</span>'+
+          '<div><h3>'+esc(p.n)+'</h3><div class="eyebrow">'+p.group+' &middot; '+p.rating.toFixed(2)+'</div></div>'+
+        '</div>'+
+        '<div class="pd-stats">'+
+          '<div><b>'+fmt(p.pts)+'</b><span>'+t("c.points")+'</span></div>'+
+          '<div><b>'+p.streak+'</b><span>'+t("d.streak")+'</span></div>'+
+          '<div><b>'+squadAvg(p).toFixed(1)+'</b><span>'+t("t.avg")+'</span></div>'+
+        '</div>'+
+        '<div class="eyebrow pd-lab">'+t("v.skills")+'</div>'+
+        '<div class="asheet">'+rows+'</div>'+
+        '<div class="eyebrow pd-lab">'+t("t.note")+'</div>'+
+        '<textarea id="pdNote" rows="2" placeholder="'+t("t.notePh")+'"></textarea>'+
+        (notes.length ? '<div class="pd-notes">'+notes.slice(0,3).map(function(nt){
+          return '<div class="note"><p>'+esc(nt.t)+'</p><div class="by">MJ, '+df.format(new Date(nt.at))+'</div></div>';
+        }).join("")+'</div>' : '')+
+        '<button class="btn btn-primary" id="pdSave">'+t("t.saveSheet")+'</button>'+
+      '</div>');
+  }
+
+  document.addEventListener("click", function(e){
+    var b = e.target.closest("[data-player]");
+    if(b){ openPlayer(b.dataset.player); return; }
+    if(e.target.closest("#pdSave")){
+      var wrap = $(".pdetail");
+      if(!wrap) return;
+      var pid = wrap.dataset.pid, map = {};
+      $$("[data-skill]", wrap).forEach(function(r){ map[r.dataset.skill] = parseFloat(r.value); });
+      S.setSkills(pid, map);
+      var note = $("#pdNote").value.trim();
+      if(note) S.addNote(pid, note);
+      haptic(18);
+      closeModal();
+      applyEdits(); renderSkills(); renderPlayers(); renderToday();
+      if(window.r2figure) window.r2figure.mount();
+      var who = D.ROSTER.filter(function(x){ return x.id === pid; })[0];
+      window.r2toast((who ? who.n.split(" ")[0] + " · " : "") + t("t.sheetSaved"));
+      return;
+    }
+  });
+
+  document.addEventListener("input", function(e){
+    var r = e.target.closest("[data-skill]");
+    if(r){
+      var out = document.getElementById("out-" + r.dataset.skill);
+      if(out) out.textContent = parseFloat(r.value).toFixed(1);
+      return;
+    }
+    if(e.target.id === "playerFind"){ playerQuery = e.target.value; renderPlayers(); }
+  });
+
+  /* ---------------------------------------------------------------- coach: drills */
+
+  function renderDrillList(){
+    var box = $("#drillList");
+    if(!box) return;
+    box.innerHTML = feedHTML(D.DRILLS.slice(0,8).map(function(d){
+      return {c:"g", t:esc(d.n), d:d.lvl + " · " + d.dur + " · " + esc(d.kit), a:""};
+    }), "");
+  }
+
   /* ---------------------------------------------------------------- coach tools */
 
   var checkSession = D.SCHEDULE[0] ? D.SCHEDULE[0].id : "s0";
@@ -679,12 +846,6 @@
         '<span class="state">'+(isOn ? "&#10003; " + t("t.present") : t("t.in"))+'</span></button>';
     }).join("") : '<p class="empty">'+t("t.noPlayer")+'</p>';
 
-    var sel2 = $("#assessPlayer");
-    if(sel2 && !sel2.options.length)
-      sel2.innerHTML = D.ROSTER.map(function(p){ return '<option value="'+p.id+'">'+esc(p.n)+'</option>'; }).join("");
-    var sk = $("#assessSkill");
-    if(sk && !sk.options.length)
-      sk.innerHTML = D.SKILLS.map(function(s){ return '<option value="'+esc(s.n)+'">'+s.n+'</option>'; }).join("");
   }
 
   document.addEventListener("click", function(e){
@@ -694,7 +855,7 @@
       var on = S.checkIn(checkSession, c.dataset.check);
       var p = D.ROSTER.filter(function(x){ return x.id === c.dataset.check; })[0];
       haptic();
-      renderStaff();
+      renderStaff(); renderToday();
       if(on && p.me) award(60, p.n.split(" ")[0] + " · +60 " + t("c.points"));
       else window.r2toast(p.n.split(" ")[0] + " · " + (on ? t("t.present") : t("t.in")));
       return;
@@ -704,7 +865,7 @@
       var all = {};
       D.ROSTER.forEach(function(p){ all[p.id] = true; });
       S.setChecks(checkSession, all);
-      haptic(18); renderStaff();
+      haptic(18); renderStaff(); renderToday();
       window.r2toast(D.ROSTER.length + " " + t("t.present").toLowerCase(), t("c.undo"), undoChecks);
       return;
     }
@@ -713,15 +874,6 @@
       S.setChecks(checkSession, {});
       haptic(18); renderStaff();
       window.r2toast(t("t.clear"), t("c.undo"), undoChecks);
-      return;
-    }
-    if(e.target.closest("#saveAssess")){
-      var name = $("#assessSkill").value, val = parseFloat($("#assessVal").value);
-      var who  = $("#assessPlayer").options[$("#assessPlayer").selectedIndex].text;
-      S.setSkill(name, val);
-      applyEdits(); renderSkills();
-      if(window.r2figure) window.r2figure.mount();
-      window.r2toast(who + " · " + name + " " + val.toFixed(1));
       return;
     }
     if(e.target.closest("#publishDrill")){
@@ -734,7 +886,7 @@
         g:"linear-gradient(140deg,#1B3B57,#0F2233)"
       });
       $("#drillName").value = "";
-      renderDrills();
+      renderDrills(); renderDrillList();
       window.r2toast(nm + " · " + t("t.publish"));
     }
   });
@@ -747,7 +899,6 @@
   }
 
   document.addEventListener("input", function(e){
-    if(e.target.id === "assessVal") $("#assessOut").textContent = parseFloat(e.target.value).toFixed(1);
     if(e.target.id === "barCode" && e.target.value.length >= 5) checkCode();
     if(e.target.id === "rosterFind"){ rosterQuery = e.target.value; renderStaff(); }
   });
@@ -959,6 +1110,9 @@
     renderSquad();
     renderCoaches();
     renderStaff();
+    renderToday();
+    renderPlayers();
+    renderDrillList();
     renderLive();
     renderQueue();
     scanNote();
